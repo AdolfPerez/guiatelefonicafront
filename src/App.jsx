@@ -24,7 +24,7 @@ const Filter = props => <div>filter shown with <input value={props.value} onChan
 
 const PersonForm = props => <form onSubmit={props.onSubmit}>
   <div>name: <input value={props.valueName} onChange={props.onChangeName} /></div>
-  <div>number: <input value={props.valueNumber} onChange={props.onChangeNumber} /></div>
+  <div>number: <input type="number" value={props.valueNumber} onChange={props.onChangeNumber} /></div>
   <div><button type="submit" onClick={props.onClick}>add</button></div>
 </form>
 
@@ -80,44 +80,53 @@ const App = () => {
     })
     if (found) {
       if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
-        operaciones.update(found.id, { ...found, number: newNumber })
-          .then(
-            actualizado => {
-              console.clear()
-              console.log(`actualizado`, actualizado)
-              operaciones.getAll()
-                .then(
-                  obtenido => {
-                    console.log(`obtenido`, obtenido)
-                    setImprimir(obtenido)
-                    setPersons(obtenido)
-                    setNewName('')
-                    setNewNumber('')
-                  }
-                )
-            }
-          )
-          .catch(
-            error => {
-              console.clear()
-              console.error(error)              
-              operaciones.getAll()
-              .then(
-                obtenido => {
-                  console.log(`obtenido`, obtenido)
-                  setImprimir(obtenido)
-                  setPersons(obtenido)
-                  setNewName('')
-                  setNewNumber('')
-                }
-              )          
-              setMessage(`Information of ${newName} has already been removed from server`)
-              setColor(`red`)
-              setTimeout(() => {
-              setMessage(null)
-              }, 2000)
-            }
-          )
+        if (newNumber && newNumber.length > 7) {
+          operaciones.update(found.id, { ...found, number: newNumber })
+            .then(
+              actualizado => {
+                console.clear()
+                console.log(`actualizado`, actualizado)
+                operaciones.getAll()
+                  .then(
+                    obtenido => {
+                      console.log(`obtenido`, obtenido)
+                      setImprimir(obtenido)
+                      setPersons(obtenido)
+                      setNewName('')
+                      setNewNumber('')
+                    }
+                  )
+              }
+            )
+            .catch(
+              error => {
+                console.clear()
+                console.error(error)
+                operaciones.getAll()
+                  .then(
+                    obtenido => {
+                      console.log(`obtenido`, obtenido)
+                      setImprimir(obtenido)
+                      setPersons(obtenido)
+                      setNewName('')
+                      setNewNumber('')
+                    }
+                  )
+                setMessage(`Information of ${newName} has already been removed from server`)
+                setColor(`red`)
+                setTimeout(() => {
+                  setMessage(null)
+                }, 3000)
+              }
+            )
+        } else {
+          setMessage(`El numero debe contener por lo menos ocho digitos`)
+          setColor(`red`)
+          setTimeout(() => {
+            setMessage(null)
+          }, 3000)
+
+        }
       }
     } else {
       operaciones.create({ name: newName, number: newNumber })
@@ -132,8 +141,17 @@ const App = () => {
           setColor(`green`)
           setTimeout(() => {
             setMessage(null)
-          }, 2000)
+          }, 3000)
         })
+        .catch(
+          error => {
+            setMessage(error.response.data.error)
+            setColor(`red`)
+            setTimeout(() => {
+              setMessage(null)
+            }, 3000)
+          }
+        )
     }
   }
 
