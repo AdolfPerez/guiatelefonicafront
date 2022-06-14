@@ -108,8 +108,6 @@ const App = () => {
                       console.log(`obtenido`, obtenido)
                       setImprimir(obtenido)
                       setPersons(obtenido)
-                      setNewName('')
-                      setNewNumber('')
                     }
                   )
                 setMessage(`Information of ${newName} has already been removed from server`)
